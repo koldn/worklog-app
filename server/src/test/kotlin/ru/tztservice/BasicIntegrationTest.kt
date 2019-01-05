@@ -14,14 +14,19 @@ import org.testcontainers.containers.PostgreSQLContainer
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension::class)
-@ContextConfiguration(initializers = [BasicIntegrationTest.MongoInit::class])
+@ContextConfiguration(initializers = [BasicIntegrationTest.DBInit::class])
 internal class BasicIntegrationTest {
 
-    internal class MongoInit : ApplicationContextInitializer<ConfigurableApplicationContext> {
+    internal class DBInit : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(applicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                "spring.data.mongodb.host=${postgresContainer.containerIpAddress}",
-                "spring.data.mongodb.port=${postgresContainer.getMappedPort(27017)}"
+                "spring.datasource.driver-class-name=org.postgresql.Driver",
+                "spring.datasource.url=${postgresContainer.jdbcUrl}",
+                "spring.datasource.username=${postgresContainer.username}",
+                "spring.datasource.password=${postgresContainer.password}",
+                "spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false",
+                "spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL95Dialect",
+                "spring.jpa.hibernate.ddl-auto=update"
             ).applyTo(applicationContext)
         }
     }
@@ -43,6 +48,7 @@ internal class BasicIntegrationTest {
             postgresContainer.stop()
         }
     }
+
     @LocalServerPort
-    var port : Int? = null
+    var port: Int? = null
 }
