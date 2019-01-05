@@ -1,4 +1,4 @@
-package ru.tztservice.server
+package ru.tztservice
 
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.PostgreSQLContainer
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension::class)
@@ -20,27 +20,27 @@ internal class BasicIntegrationTest {
     internal class MongoInit : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(applicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                "spring.data.mongodb.host=${mongoContainer.containerIpAddress}",
-                "spring.data.mongodb.port=${mongoContainer.getMappedPort(27017)}"
+                "spring.data.mongodb.host=${postgresContainer.containerIpAddress}",
+                "spring.data.mongodb.port=${postgresContainer.getMappedPort(27017)}"
             ).applyTo(applicationContext)
         }
     }
 
-    private class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
+    private class KGenericContainer : PostgreSQLContainer<KGenericContainer>()
 
     companion object {
-        private val mongoContainer: KGenericContainer = KGenericContainer("mongo:4.0.4").withExposedPorts(27017)
+        private val postgresContainer: KGenericContainer = KGenericContainer()
 
         @JvmStatic
         @BeforeAll
         fun startContainer() {
-            mongoContainer.start()
+            postgresContainer.start()
         }
 
         @JvmStatic
         @AfterAll
         fun stopContainer() {
-            mongoContainer.stop()
+            postgresContainer.stop()
         }
     }
     @LocalServerPort
