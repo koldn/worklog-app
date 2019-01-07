@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.RequestEntity
-import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.random
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 import ru.tztservice.BasicIntegrationTest
