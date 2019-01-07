@@ -7,8 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import ru.tztservice.dto.CredentialsDto
 import ru.tztservice.security.auth.JwtAuthConfiguration
+import ru.tztservice.shared.CredentialsDto
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.servlet.FilterChain

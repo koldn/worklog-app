@@ -9,7 +9,7 @@ import java.util.*
 
 @Component
 @Transactional
-class UserService(val userRepository: DomainUserRepository, val passwordEncoder: PasswordEncoder) {
+class UserService(private val userRepository: DomainUserRepository, private val passwordEncoder: PasswordEncoder) {
 
     @Transactional(readOnly = true)
     fun getUserByLogin(userName: String): Optional<DomainUser> {

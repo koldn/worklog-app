@@ -12,8 +12,8 @@ import org.springframework.http.RequestEntity
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.random
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 import ru.tztservice.BasicIntegrationTest
-import ru.tztservice.dto.CredentialsDto
 import ru.tztservice.security.auth.JwtAuthConfiguration
+import ru.tztservice.shared.CredentialsDto
 import java.net.URI
 
 internal class AuthTest : BasicIntegrationTest() {
