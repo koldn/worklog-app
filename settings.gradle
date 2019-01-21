@@ -1,3 +1,4 @@
 rootProject.name = 'worklog-app'
-include 'server','shared'
+include 'server', 'shared'
+include 'synchronizer-api'
 

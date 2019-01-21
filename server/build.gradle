@@ -48,6 +48,7 @@ compileKotlin.dependsOn(processResources)
 dependencies {
 
     implementation(project(':shared'))
+    implementation(project(':synchronizer-api'))
 
     compileOnly("org.springframework.boot:spring-boot-configuration-processor:2.1.0.RELEASE")
 
