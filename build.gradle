@@ -1,4 +1,4 @@
-group = "ru.worklog"
+group = "ru.worklog-app"
 version = "0.0.1-SNAPSHOT"
 
 apply plugin: 'idea'
