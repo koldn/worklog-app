@@ -33,8 +33,7 @@ internal class AuthTest : BasicIntegrationTest() {
         restTemplate.postForEntity("http://localhost:$port/user/register", credentialsEntity, String::class.java)
         val authResponse =
             restTemplate.postForEntity("http://localhost:$port/auth/", credentialsEntity, Nothing::class.java)
-        val headerValue = authResponse.headers.getFirst(jwtAuthConfiguration.header)
-        val token = headerValue!!.replace(jwtAuthConfiguration.tokenPrefix, "").trim()
+        val token = authResponse.headers.getFirst(jwtAuthConfiguration.header)
 
         val claims = Jwts.parser().setSigningKey(jwtAuthConfiguration.secret).parseClaimsJws(token).body
         assertEquals(claims.subject, creds.userName)

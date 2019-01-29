@@ -2,6 +2,7 @@ package ru.worklog.repositories
 
 import org.springframework.data.repository.CrudRepository
 import ru.worklog.domain.DomainUser
+import ru.worklog.domain.ExternalTask
 import ru.worklog.domain.TimeEntry
 import java.time.Instant
 import java.util.*
@@ -16,9 +17,11 @@ interface DomainUserRepository : CrudRepository<DomainUser, Long> {
 }
 
 interface TimeEntriesRepository : CrudRepository<TimeEntry, Long> {
-    fun findTimeEntriesByUserIDAndStartTimestampBetweenOrderByStartTimestampDesc(
-        userID: Long,
+    fun findTimeEntriesByUserAndStartTimestampBetweenOrderByStartTimestampDesc(
+        user: DomainUser,
         from: Instant,
         to: Instant
     ): Iterable<TimeEntry>
 }
+
+interface ExternalTaskRepository : CrudRepository<ExternalTask, Long>

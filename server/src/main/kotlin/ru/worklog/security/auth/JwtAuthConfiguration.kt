@@ -9,6 +9,5 @@ class JwtAuthConfiguration {
     lateinit var secret: String
     lateinit var header: String
     lateinit var authPattern: String
-    lateinit var tokenPrefix: String
     var expireInMins: Long? = 15
 }

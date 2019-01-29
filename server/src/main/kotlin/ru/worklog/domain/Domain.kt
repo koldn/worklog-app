@@ -27,8 +27,7 @@ data class DomainUser(
 @Entity
 @Table(
     name = "time_entries", indexes = [
-        Index(name = "idx_start_time", columnList = "start_time"),
-        Index(name = "idx_user_id", columnList = "user_id")
+        Index(name = "idx_start_time", columnList = "start_time")
     ]
 )
 data class TimeEntry(
@@ -40,8 +39,28 @@ data class TimeEntry(
     var shortDescription: String = "",
     @Column(name = "burn_comment")
     var burndownComment: String = "",
-    @Column(name = "user_id")
-    val userID: Long,
+    @ManyToOne(fetch = FetchType.LAZY)
+    val user: DomainUser,
+    @OneToOne(fetch = FetchType.LAZY)
+    var task: ExternalTask? = null,
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    val id: Long = -1L
+)
+
+@Entity
+@Table(
+    name = "ext_tasks"
+)
+data class ExternalTask(
+    @Column(name = "ext_id")
+    val extID: String,
+    @Column(name = "ext_title")
+    val title: String,
+    @Column(name = "color")
+    var colorCode: String? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    var user: DomainUser,
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     val id: Long = -1L

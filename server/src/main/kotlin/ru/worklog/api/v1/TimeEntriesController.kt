@@ -16,8 +16,8 @@ class TimeEntriesController(private val timeEntriesService: TimeEntriesService) 
     }
 
     @DeleteMapping("/delete")
-    fun delete(@RequestParam("entryID") entryID: Long): TimeEntryDto {
-        return Mapper.timeEntryToDto(timeEntriesService.deleteTimeEntry(entryID))
+    fun delete(@RequestParam("entryID") entryID: Long) {
+        timeEntriesService.deleteTimeEntry(entryID)
     }
 
     @GetMapping("/get/{date}")

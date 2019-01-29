@@ -12,32 +12,33 @@ import java.time.*
 @Transactional
 class TimeEntriesService(
     private val timeEntriesRepository: TimeEntriesRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val externalTaskService: ExternalTaskService
 ) {
-
 
     fun saveOrUpdate(timeEntryDto: TimeEntryDto): TimeEntry {
 
         val timeEntry = timeEntriesRepository.findById(timeEntryDto.entryID).orElseGet {
             val currentUser = SecurityContextHolder.getContext().authentication.name
-            val userID = userService.getUserByLogin(currentUser).get().id
-            TimeEntry(startTimestamp = Instant.parse(timeEntryDto.start), userID = userID)
+            val user = userService.getUserByLogin(currentUser).get()
+            TimeEntry(startTimestamp = Instant.parse(timeEntryDto.start), user = user)
         }
         Instant.now().toString()
         if (timeEntryDto.burnComment != null) timeEntry.burndownComment = timeEntryDto.burnComment!!
         if (timeEntryDto.shortDesc != null) timeEntry.shortDescription = timeEntryDto.shortDesc!!
         if (timeEntryDto.end != null) timeEntry.endTimestamp = Instant.parse(timeEntryDto.end)
+        if (timeEntryDto.task != null) {
+            val taskId = timeEntryDto.task!!.id
+            val task = externalTaskService.getTask(taskId)
+                .orElseThrow { IllegalArgumentException("invalid task id [$taskId]") }
+            timeEntry.task = task
+        }
         val save = timeEntriesRepository.save(timeEntry)
         return save
     }
 
-    /**
-     * Удалить запись, возвращается DTO от удаленной записи для возможности сделать UNDO
-     */
-    fun deleteTimeEntry(id: Long): TimeEntry {
-        val deletedEntry = timeEntriesRepository.findById(id).get()
+    fun deleteTimeEntry(id: Long) {
         timeEntriesRepository.deleteById(id)
-        return deletedEntry
     }
 
     fun getEntriesByDate(date: LocalDate): Iterable<TimeEntry> {
@@ -45,11 +46,11 @@ class TimeEntriesService(
         val endOfDay = date.atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC)
 
         val currentUser = SecurityContextHolder.getContext().authentication.name
-        val userID = userService.getUserByLogin(currentUser).get().id
+        val user = userService.getUserByLogin(currentUser).get()
 
         val timestampDesc =
-            timeEntriesRepository.findTimeEntriesByUserIDAndStartTimestampBetweenOrderByStartTimestampDesc(
-                userID,
+            timeEntriesRepository.findTimeEntriesByUserAndStartTimestampBetweenOrderByStartTimestampDesc(
+                user,
                 midnight,
                 endOfDay
             )

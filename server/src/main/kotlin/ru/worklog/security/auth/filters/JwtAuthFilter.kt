@@ -43,7 +43,7 @@ class JwtAuthFilter(val objectMapper: ObjectMapper, val jwtAuthConfiguration: Jw
         val token = Jwts.builder().setSubject(authResult!!.name).setIssuedAt(Date(currentTimeMillis))
             .setExpiration(Date(expire)).signWith(SignatureAlgorithm.HS512, jwtAuthConfiguration.secret).compact()
 
-        response!!.setHeader(jwtAuthConfiguration.header, "${jwtAuthConfiguration.tokenPrefix} $token")
+        response!!.setHeader(jwtAuthConfiguration.header, token)
     }
 
 }

@@ -18,13 +18,11 @@ class JwtTokenFilter(private val jwtAuthConfiguration: JwtAuthConfiguration, pri
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val header = request.getHeader(jwtAuthConfiguration.header)
-        if (null == header || !header.startsWith(jwtAuthConfiguration.tokenPrefix)) {
+        val token = request.getHeader(jwtAuthConfiguration.header)
+        if (null == token) {
             filterChain.doFilter(request, response)
             return
         }
-
-        val token = header.replace(jwtAuthConfiguration.tokenPrefix, "").trim()
 
         try {
             val claims = Jwts.parser().setSigningKey(jwtAuthConfiguration.secret).parseClaimsJws(token).body

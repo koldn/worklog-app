@@ -10,7 +10,9 @@ import org.springframework.boot.test.web.client.postForObject
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils
 import ru.worklog.BasicIntegrationTest
+import ru.worklog.domain.DomainUser
 import ru.worklog.domain.TimeEntry
+import ru.worklog.repositories.DomainUserRepository
 import ru.worklog.repositories.TimeEntriesRepository
 import ru.worklog.security.auth.JwtAuthConfiguration
 import ru.worklog.shared.CredentialsDto
@@ -27,6 +29,8 @@ internal class TimeEntriesControllerTest : BasicIntegrationTest() {
     lateinit var jwtAuthConfiguration: JwtAuthConfiguration
     @Autowired
     lateinit var timeEntriesRepository: TimeEntriesRepository
+    @Autowired
+    lateinit var userRepository: DomainUserRepository
 
     @BeforeAll
     internal fun setUp() {
@@ -41,11 +45,14 @@ internal class TimeEntriesControllerTest : BasicIntegrationTest() {
     }
 
     @AfterEach
-    internal fun clearEntries() = timeEntriesRepository.deleteAll()
+    internal fun clearEntries() {
+        timeEntriesRepository.deleteAll()
+    }
 
     @Test
     internal fun `Test editing an existent time-entry`() {
-        val save = timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), userID = -1))
+        val user = userRepository.save(DomainUser("1", "1"))
+        val save = timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), user = user))
         val end = Instant.now().plusMillis(1000)
         val timeEntryDto = TimeEntryDto(start = save.startTimestamp.toString(), entryID = save.id, end = end.toString())
         val savedEntryDto =
@@ -76,8 +83,9 @@ internal class TimeEntriesControllerTest : BasicIntegrationTest() {
 
     @Test
     internal fun `Test entries of one user is not shown to another user`() {
-        timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), userID = -10))
-        timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), userID = -10))
+        val user = userRepository.save(DomainUser("1", "1", -10))
+        timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), user = user))
+        timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), user = user))
 
         val formattedDate =
             DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("UTC")).format(Instant.now())
@@ -98,7 +106,8 @@ internal class TimeEntriesControllerTest : BasicIntegrationTest() {
 
     @Test
     internal fun `Test entry successful deletion`() {
-        val save = timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), userID = -1))
+        val user = userRepository.save(DomainUser("1", "1"))
+        val save = timeEntriesRepository.save(TimeEntry(startTimestamp = Instant.now(), user = user))
         val params = mapOf("entryID" to save.id)
         restTemplate.delete("http://localhost:$port/api/v1/time_entries/delete?entryID={entryID}", params)
 

@@ -50,8 +50,6 @@ dependencies {
     implementation(project(':shared'))
     implementation(project(':synchronizer-api'))
 
-    compileOnly("org.springframework.boot:spring-boot-configuration-processor:2.1.0.RELEASE")
-
     //Spring stuff
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group :'org.springframework.boot', module: 'spring-boot-starter-tomcat'

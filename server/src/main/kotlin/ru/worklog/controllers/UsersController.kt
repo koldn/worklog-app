@@ -12,11 +12,4 @@ class UsersController(val userService: UserService) {
     fun registerNewUser(@RequestBody creds: CredentialsDto) {
         userService.saveNewUser(creds.userName, creds.userPassword)
     }
-
-    //TODO : delete me when other controllers are done
-    @GetMapping("/get/{userName}")
-    @ResponseBody
-    fun getUser(@PathVariable userName: String): String {
-        return userName
-    }
 }
